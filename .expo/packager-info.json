@@ -1,9 +1,9 @@
 {
   "devToolsPort": 19002,
-  "expoServerPort": null,
-  "packagerPort": null,
-  "packagerPid": null,
+  "expoServerPort": 19000,
+  "packagerPort": 19001,
+  "packagerPid": 73760,
   "expoServerNgrokUrl": "https://jx-8da.anonymous.tracks.exp.direct",
   "packagerNgrokUrl": "https://packager.jx-8da.anonymous.tracks.exp.direct",
-  "ngrokPid": 72223
+  "ngrokPid": 73778
 }
