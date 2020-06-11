@@ -7,11 +7,29 @@ const authReducer = (state, action) => {
   switch (action.type) {
     case "add_error":
       return { ...state, errorMessage: action.payload };
-    case "signup":
+    case "signin":
       return { errorMessage: "", token: action.payload };
+    case "clear_error_message":
+      return { ...state, errorMessage: "" };
     default:
       return state;
   }
+};
+
+// log in the user automatically if we have a token saved in async storage
+const tryLocalSignin = (dispatch) => async () => {
+  const token = await AsyncStorage.getItem("token");
+
+  if (token) {
+    dispatch({ type: "signin", payload: token });
+    navigate("TrackList");
+  } else {
+    navigate("Signup");
+  }
+};
+
+const clearErrorMessage = (dispatch) => () => {
+  dispatch({ type: "clear_error_message" });
 };
 
 const signup = (dispatch) => async ({ email, password }) => {
@@ -23,7 +41,7 @@ const signup = (dispatch) => async ({ email, password }) => {
     });
     // we use AsyncStorage to store the jwt so that a user does not have to keep logging in everytime the close the app
     await AsyncStorage.setItem("token", response.data.token);
-    dispatch({ type: "signup", payload: response.data.token });
+    dispatch({ type: "signin", payload: response.data.token });
     navigate("TrackList");
   } catch (err) {
     dispatch({
@@ -36,12 +54,25 @@ const signup = (dispatch) => async ({ email, password }) => {
   // if sign up fails, we probably need to reflect an error message somewhere
 };
 
-const signin = (dispatch) => {
-  return ({ email, password }) => {
-    // make api request to sign in with email & password
-    // Handle success by updating state
-    // Handle failure by showing error message
-  };
+const signin = (dispatch) => async ({ email, password }) => {
+  // make api request to sign in with email & password
+  try {
+    const response = await trackerApi.post("/signin", {
+      email,
+      password,
+    });
+
+    await AsyncStorage.setItem("token", response.data.token);
+    dispatch({ type: "signin", payload: response.data.token });
+    navigate("TrackList");
+  } catch (err) {
+    dispatch({
+      type: "add_error",
+      payload: "Something went wrong with sign iin",
+    });
+  }
+  // Handle success by updating state
+  // Handle failure by showing error message
 };
 
 const signout = (dispatch) => {
@@ -52,6 +83,6 @@ const signout = (dispatch) => {
 
 export const { Provider, Context } = createDataContext(
   authReducer,
-  { signin, signout, signup },
+  { signin, signout, signup, clearErrorMessage, tryLocalSignin },
   { token: null, errorMessage: "" }
 );
