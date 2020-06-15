@@ -1,39 +1,18 @@
 import "../_mockLocation";
-import React, { useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { StyleSheet } from "react-native";
 import { Text } from "react-native-elements";
 import { SafeAreaView } from "react-navigation";
-import {
-  requestPermissionsAsync,
-  watchPositionAsync,
-  Accuracy,
-} from "expo-location";
 import Map from "../components/Map";
+import { Context as LocationContext } from "../context/LocationContext";
+import useLocation from "../hooks/useLocation";
 
 const TrackCreateScreen = () => {
-  const [err, setErr] = useState(null);
-
-  const startWatching = async () => {
-    try {
-      await requestPermissionsAsync();
-      await watchPositionAsync(
-        {
-          accuracy: Accuracy.BestForNavigation,
-          timeInterval: 1000, // get an update once every second
-          distanceInterval: 10, // or once every 10 meters
-        },
-        (location) => {
-          console.log(location);
-        }
-      );
-    } catch (e) {
-      setErr(e);
-    }
-  };
-
-  useEffect(() => {
-    startWatching();
-  }, []);
+  const { addLocation } = useContext(LocationContext);
+  // pass in addLocation as the callback param to useLocation.
+  // This means that when we get ta new location we will call addLocation
+  // Then destructure out any error you get, if any
+  const [err] = useLocation(addLocation);
 
   return (
     <SafeAreaView forceInset={{ top: "always" }}>

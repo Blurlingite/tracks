@@ -11,6 +11,8 @@ import TrackListScreen from "./src/screens/TrackListScreen";
 import ResolveAuthScreen from "./src/screens/ResolveAuthScreen";
 
 import { Provider as AuthProvider } from "./src/context/AuthContext";
+import { Provider as LocationProvider } from "./src/context/LocationContext";
+
 import { setNavigator } from "./src/navigationRef";
 
 const switchNavigator = createSwitchNavigator({
@@ -33,13 +35,15 @@ const App = createAppContainer(switchNavigator);
 
 export default () => {
   return (
-    <AuthProvider>
-      {/* See video 206: Navigation From Outside of React in Stephen Grider's course for explanation */}
-      <App
-        ref={(navigator) => {
-          setNavigator(navigator);
-        }}
-      />
-    </AuthProvider>
+    <LocationProvider>
+      <AuthProvider>
+        {/* See video 206: Navigation From Outside of React in Stephen Grider's course for explanation */}
+        <App
+          ref={(navigator) => {
+            setNavigator(navigator);
+          }}
+        />
+      </AuthProvider>
+    </LocationProvider>
   );
 };
