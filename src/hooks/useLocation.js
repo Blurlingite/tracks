@@ -34,7 +34,7 @@ export default (shouldTrack, callback) => {
       subscriber.remove(); // remove subscriber
       setSubscriber(null); // set subscriber state back to null so we don't have a leftover reference to the previous subscriber
     }
-  }, [shouldTrack]);
+  }, [shouldTrack, callback]);
 
   return [err];
 };
